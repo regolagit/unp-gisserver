@@ -3,17 +3,18 @@
 # This script ensures proper execution context, permissions, and logging.
 
 # --- Configuration ---
+GIT_PAT=${GITHUB_PAT}
 # IMPORTANT: Replace these URLs with the raw content URLs of your scripts and config files
-RESIZE_SCRIPT_URL="https://raw.githubusercontent.com/danko1981/gis_requirements/refs/heads/main/resize_root_lvm.sh"
-GIS_SCRIPT_URL="https://raw.githubusercontent.com/danko1981/gis_requirements/refs/heads/main/install_requirements.sh"
+RESIZE_SCRIPT_URL="https://raw.githubusercontent.com/regolagit/unp-gisserver/refs/heads/main/resize_root_lvm.sh"
+GIS_SCRIPT_URL="https://raw.githubusercontent.com/regolagit/unp-gisserver/refs/heads/main/install_requirements.sh"
 
 # Array of NGINX config file URLs
 NGINX_CONFIG_URLS=(
-    "https://raw.githubusercontent.com/danko1981/gis_requirements/refs/heads/main/nginx/alterations.conf"
-    "https://raw.githubusercontent.com/danko1981/gis_requirements/refs/heads/main/nginx/geocoding.conf"
-    "https://raw.githubusercontent.com/danko1981/gis_requirements/refs/heads/main/nginx/geoserver.conf"
-    "https://raw.githubusercontent.com/danko1981/gis_requirements/refs/heads/main/nginx/routing.conf"
-    "https://raw.githubusercontent.com/danko1981/gis_requirements/refs/heads/main/nginx/ums.conf"
+    "https://raw.githubusercontent.com/regolagit/unp-gisserver/refs/heads/main/nginx/alterations.conf"
+    "https://raw.githubusercontent.com/regolagit/unp-gisserver/refs/heads/main/nginx/geocoding.conf"
+    "https://raw.githubusercontent.com/regolagit/unp-gisserver/refs/heads/main/nginx/geoserver.conf"
+    "https://raw.githubusercontent.com/regolagit/unp-gisserver/refs/heads/main/nginx/routing.conf"
+    "https://raw.githubusercontent.com/regolagit/unp-gisserver/refs/heads/main/nginx/ums.conf"
 )
 
 # --- Setup ---
@@ -47,7 +48,7 @@ download_file() {
 
     echo "Downloading file from ${url} to ${local_path}..."
     # Use curl with -f to fail silently on server errors (like 404) and -s for silent mode
-    curl -s -f -L -o "${local_path}" "${url}" # Added -L to follow redirects
+    curl -s -f -L -H "Authorization: token ${GIT_PAT}" -o "${local_path}" "${url}" # Added -L to follow redirects
     if [[ $? -ne 0 ]]; then
         echo "ERROR: Failed to download file from ${url}. Please check the URL and network connectivity."
         return 1 # Return an error code instead of exiting
@@ -86,9 +87,9 @@ else
 fi
 
 
-# Step 2: Download and run the GIS installation script
+# Step 2: Download and run the GIS requirements script
 echo ""
-echo "--- Section 2: GIS Application Installation ---"
+echo "--- Section 2: GIS Rrquirements Installation ---"
 if download_file "${GIS_SCRIPT_URL}" "${LOCAL_GIS_SCRIPT}" true; then
     echo "Executing GIS installation script: ${LOCAL_GIS_SCRIPT}..."
     bash "${LOCAL_GIS_SCRIPT}"
